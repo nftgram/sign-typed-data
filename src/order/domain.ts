@@ -1,4 +1,26 @@
-export type AssetType = {
+export type OrderAssetType = {
+	tp: string
+	data: string
+}
+
+export type OrderAsset = {
+	assetType: OrderAssetType
+	amount: string
+}
+
+export type Order = {
+	maker: string
+	makeAsset: OrderAsset
+	taker: string
+	takeAsset: OrderAsset
+	salt: string
+	start: string
+	end: string
+	data: string
+	dataType: string
+}
+
+export type AssetTypeForm = {
   "@type": "ETH"
 } | {
   "@type": "ERC721"
@@ -14,24 +36,35 @@ export type AssetType = {
 	tokenId: string
 }
 
-export type EncodedAsset = {
+export type AssetEncodedTypeForm = {
 	type: string
 	data: string
 }
 
-export type Asset = {
-  type: EncodedAsset,
-  value: string
+export type AssetForm = {
+	type: AssetTypeForm
+	value: string
+	encodedType: AssetEncodedTypeForm
 }
 
-export type OrderNotSigned = {
-	maker: string
-	make: Asset
-	taker: string
-	take: Asset
-	salt: string
-	start: string
-	end: string
-	data: string
-	type: string
+type FeeForm = {
+	account: string
+	value: string
+}
+export type OrderDataForm = {
+	"@type": string,
+	beneficiary?: string,
+	originFees: FeeForm[]
+}
+
+export type OrderForm = {
+	maker: string,
+	make: AssetForm,
+	taker: string,
+	take: AssetForm,
+	salt: string,
+	start: 0,
+	end: 0,
+	data: OrderDataForm,
+	signature: string
 }

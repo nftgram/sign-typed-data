@@ -91456,20 +91456,6 @@ exports.signTypedData = signTypedData;
 },{}],"script.ts":[function(require,module,exports) {
 "use strict";
 
-var __assign = this && this.__assign || function () {
-  __assign = Object.assign || function (t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-      s = arguments[i];
-
-      for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-    }
-
-    return t;
-  };
-
-  return __assign.apply(this, arguments);
-};
-
 var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
   function adopt(value) {
     return value instanceof P ? value : new P(function (resolve) {
@@ -91727,11 +91713,7 @@ function getEncodedAssetData(asset) {
   });
 }
 
-function getEncoderData(originFees) {
-  if (originFees === void 0) {
-    originFees = [];
-  }
-
+function getEncoderData(data) {
   return __awaiter(this, void 0, void 0, function () {
     var res;
     return __generator(this, function (_a) {
@@ -91739,11 +91721,7 @@ function getEncoderData(originFees) {
         case 0:
           return [4
           /*yield*/
-          , client.post("protocol/ethereum/order/indexer/v0.1/encoder/data", {
-            "@type": "V1",
-            beneficiary: "0x0000000000000000000000000000000000000000",
-            originFees: originFees
-          })];
+          , client.post("protocol/ethereum/order/indexer/v0.1/encoder/data", data)];
 
         case 1:
           res = _a.sent();
@@ -91755,19 +91733,65 @@ function getEncoderData(originFees) {
   });
 }
 
-function createTestOrder(maker, taker) {
-  return __awaiter(this, void 0, Promise, function () {
-    var _a;
+function createTestOrder(take, make, data, maker, taker) {
+  return {
+    maker: maker,
+    makeAsset: {
+      assetType: {
+        tp: make.type,
+        data: make.data
+      },
+      amount: "1"
+    },
+    taker: taker,
+    takeAsset: {
+      assetType: {
+        tp: take.type,
+        data: take.data
+      },
+      amount: "10000000000000000"
+    },
+    start: "0",
+    end: "0",
+    data: data.data,
+    dataType: data.type,
+    salt: "0x0000000000000000000000000000000000000000000000000000000000000001"
+  };
+}
 
-    var _b, _c, _d;
-
-    return __generator(this, function (_e) {
-      switch (_e.label) {
+function putOrder(order) {
+  return __awaiter(this, void 0, void 0, function () {
+    var res;
+    return __generator(this, function (_a) {
+      switch (_a.label) {
         case 0:
-          _b = {
-            maker: maker
-          };
-          _c = {};
+          return [4
+          /*yield*/
+          , client.put("/protocol/ethereum/order/indexer/v0.1/orders", order)];
+
+        case 1:
+          res = _a.sent();
+          return [2
+          /*return*/
+          , res.data];
+      }
+    });
+  });
+}
+
+function testSign() {
+  return __awaiter(this, void 0, void 0, function () {
+    var taker, maker, make, take, data, order, signature;
+    return __generator(this, function (_a) {
+      switch (_a.label) {
+        case 0:
+          taker = "0x0000000000000000000000000000000000000000";
+          return [4
+          /*yield*/
+          , web3.eth.getAccounts()];
+
+        case 1:
+          maker = _a.sent()[0];
           return [4
           /*yield*/
           , getEncodedAssetData({
@@ -91776,54 +91800,42 @@ function createTestOrder(maker, taker) {
             tokenId: "53721905486644660545161939638297855196812841812707644157952069735379309525090"
           })];
 
-        case 1:
-          _b.make = (_c.type = _e.sent(), _c.value = "1", _c);
-          _d = {};
+        case 2:
+          make = _a.sent();
           return [4
           /*yield*/
           , getEncodedAssetData({
             "@type": "ETH"
           })];
 
-        case 2:
-          _a = [(_b.take = (_d.type = _e.sent(), _d.value = "10000000000000000", _d), _b.start = "0", _b.end = "0", _b.salt = "0x0000000000000000000000000000000000000000000000000000000000000001", _b.taker = taker, _b)];
-          return [4
-          /*yield*/
-          , getEncoderData()];
-
         case 3:
-          return [2
-          /*return*/
-          , __assign.apply(void 0, _a.concat([_e.sent()]))];
-      }
-    });
-  });
-}
-
-function testSign() {
-  return __awaiter(this, void 0, void 0, function () {
-    var taker, maker, _a, _b;
-
-    return __generator(this, function (_c) {
-      switch (_c.label) {
-        case 0:
-          taker = "0x0000000000000000000000000000000000000000";
+          take = _a.sent();
           return [4
           /*yield*/
-          , web3.eth.getAccounts()];
+          , getEncoderData({
+            "@type": "V1",
+            beneficiary: "0x0000000000000000000000000000000000000000",
+            originFees: []
+          })];
 
-        case 1:
-          maker = _c.sent()[0];
-          _a = signOrderMessage;
-          _b = [web3];
+        case 4:
+          data = _a.sent();
           return [4
           /*yield*/
-          , createTestOrder(maker, taker)];
+          , createTestOrder(take, make, data, maker, taker)];
 
-        case 2:
+        case 5:
+          order = _a.sent();
+          signature = signOrderMessage(web3, order, maker, 4, "0x43162023C187662684abAF0b211dCCB96fa4eD8a");
           return [2
           /*return*/
-          , _a.apply(void 0, _b.concat([_c.sent(), maker, 4, "0x43162023C187662684abAF0b211dCCB96fa4eD8a"]))];
+          , putOrder({
+            taker: order.taker,
+            take: {
+              value: order.takeAsset.amount,
+              encodedType: encodedType
+            }
+          })];
       }
     });
   });
