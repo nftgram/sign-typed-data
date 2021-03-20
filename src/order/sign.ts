@@ -28,7 +28,7 @@ export type DomainData = {
 export function createTypeData(
   domainData: DomainData,
   primaryType: string,
-  message: string,
+  message: any,
   types: Record<string, TypedData>
 ) {
   return {
