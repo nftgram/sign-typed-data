@@ -91422,14 +91422,8 @@ function signTypedData(web3, from, data) {
   var msgData = JSON.stringify(data);
   return new Promise(function (resolve, reject) {
     function cb(err, result) {
-      if (err) {
-        return reject(err);
-      }
-
-      if (result.error) {
-        return reject(result.error);
-      }
-
+      if (err) return reject(err);
+      if (result.error) return reject(result.error);
       var sig = result.result;
       var sig0 = sig.substring(2);
       var r = "0x" + sig0.substring(0, 64);
@@ -91955,7 +91949,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "39021" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62101" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
