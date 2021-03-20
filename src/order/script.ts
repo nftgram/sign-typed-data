@@ -105,21 +105,24 @@ async function putOrder(order: OrderForm) {
 async function testSign() {
   const taker = "0x0000000000000000000000000000000000000000"
   const [maker] = await web3.eth.getAccounts();
-  const make = await getEncodedAssetData({
+  const makeForm = {
     "@type": "ERC721",
     token: "0x25646B08D9796CedA5FB8CE0105a51820740C049",
     tokenId: "53721905486644660545161939638297855196812841812707644157952069735379309525090"
-  })
-  const take = await getEncodedAssetData({
+  } as const
+  const make = await getEncodedAssetData(makeForm)
+  const takeForm = {
     "@type": "ETH",
-  })
-  const data = await getEncoderData({
+  } as const
+  const take = await getEncodedAssetData(takeForm)
+  const dataForm = {
     "@type":"V1",
     beneficiary:"0x0000000000000000000000000000000000000000",
     originFees: []
-  })
-  const order = await createTestOrder(take, make, data, maker, taker)
-  const signature = signOrderMessage(
+  }
+  const data = await getEncoderData(dataForm)
+  const order = createTestOrder(take, make, data, maker, taker)
+  const signature = await signOrderMessage(
     web3,
     order,
     maker,
@@ -128,11 +131,21 @@ async function testSign() {
   );
 
   return putOrder({
-    taker: order.taker,
+    maker,
+    make:{
+        type:makeForm,
+        value: order.makeAsset.amount
+      },
     take: {
-      value: order.takeAsset.amount,
-      encodedType
-    }
+      type:takeForm,
+      value: order.takeAsset.amount
+    },
+    taker,
+    start: order.start,
+    end: order.end,
+    salt: order.salt,
+    data: dataForm,
+    signature
   })
 }
 

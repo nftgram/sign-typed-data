@@ -44,7 +44,6 @@ export type AssetEncodedTypeForm = {
 export type AssetForm = {
 	type: AssetTypeForm
 	value: string
-	encodedType: AssetEncodedTypeForm
 }
 
 type FeeForm = {
@@ -63,8 +62,8 @@ export type OrderForm = {
 	taker: string,
 	take: AssetForm,
 	salt: string,
-	start: 0,
-	end: 0,
+	start: string,
+	end: string,
 	data: OrderDataForm,
 	signature: string
 }

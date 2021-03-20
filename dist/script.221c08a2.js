@@ -91781,7 +91781,7 @@ function putOrder(order) {
 
 function testSign() {
   return __awaiter(this, void 0, void 0, function () {
-    var taker, maker, make, take, data, order, signature;
+    var taker, maker, makeForm, make, takeForm, take, dataForm, data, order, signature;
     return __generator(this, function (_a) {
       switch (_a.label) {
         case 0:
@@ -91792,49 +91792,62 @@ function testSign() {
 
         case 1:
           maker = _a.sent()[0];
-          return [4
-          /*yield*/
-          , getEncodedAssetData({
+          makeForm = {
             "@type": "ERC721",
             token: "0x25646B08D9796CedA5FB8CE0105a51820740C049",
             tokenId: "53721905486644660545161939638297855196812841812707644157952069735379309525090"
-          })];
+          };
+          return [4
+          /*yield*/
+          , getEncodedAssetData(makeForm)];
 
         case 2:
           make = _a.sent();
+          takeForm = {
+            "@type": "ETH"
+          };
           return [4
           /*yield*/
-          , getEncodedAssetData({
-            "@type": "ETH"
-          })];
+          , getEncodedAssetData(takeForm)];
 
         case 3:
           take = _a.sent();
-          return [4
-          /*yield*/
-          , getEncoderData({
+          dataForm = {
             "@type": "V1",
             beneficiary: "0x0000000000000000000000000000000000000000",
             originFees: []
-          })];
+          };
+          return [4
+          /*yield*/
+          , getEncoderData(dataForm)];
 
         case 4:
           data = _a.sent();
+          order = createTestOrder(take, make, data, maker, taker);
           return [4
           /*yield*/
-          , createTestOrder(take, make, data, maker, taker)];
+          , signOrderMessage(web3, order, maker, 4, "0x43162023C187662684abAF0b211dCCB96fa4eD8a")];
 
         case 5:
-          order = _a.sent();
-          signature = signOrderMessage(web3, order, maker, 4, "0x43162023C187662684abAF0b211dCCB96fa4eD8a");
+          signature = _a.sent();
           return [2
           /*return*/
           , putOrder({
-            taker: order.taker,
+            maker: maker,
+            make: {
+              type: makeForm,
+              value: order.makeAsset.amount
+            },
             take: {
-              value: order.takeAsset.amount,
-              encodedType: encodedType
-            }
+              type: takeForm,
+              value: order.takeAsset.amount
+            },
+            taker: taker,
+            start: order.start,
+            end: order.end,
+            salt: order.salt,
+            data: dataForm,
+            signature: signature
           })];
       }
     });
