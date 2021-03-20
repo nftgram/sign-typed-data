@@ -91456,6 +91456,20 @@ exports.signTypedData = signTypedData;
 },{}],"script.ts":[function(require,module,exports) {
 "use strict";
 
+var __assign = this && this.__assign || function () {
+  __assign = Object.assign || function (t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+      s = arguments[i];
+
+      for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+    }
+
+    return t;
+  };
+
+  return __assign.apply(this, arguments);
+};
+
 var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
   function adopt(value) {
     return value instanceof P ? value : new P(function (resolve) {
@@ -91733,28 +91747,82 @@ function getEncoderData(data) {
   });
 }
 
-function createTestOrder(take, make, data, maker, taker) {
+function prepareOrderMessage(form) {
+  return __awaiter(this, void 0, Promise, function () {
+    var encodedMakeType, encodedTakeType, encodedData;
+    return __generator(this, function (_a) {
+      switch (_a.label) {
+        case 0:
+          return [4
+          /*yield*/
+          , getEncodedAssetData(form.make.type)];
+
+        case 1:
+          encodedMakeType = _a.sent();
+          return [4
+          /*yield*/
+          , getEncodedAssetData(form.take.type)];
+
+        case 2:
+          encodedTakeType = _a.sent();
+          return [4
+          /*yield*/
+          , getEncoderData(form.data)];
+
+        case 3:
+          encodedData = _a.sent();
+          return [2
+          /*return*/
+          , {
+            maker: form.maker,
+            makeAsset: {
+              assetType: {
+                tp: encodedMakeType.type,
+                data: encodedMakeType.data
+              },
+              amount: form.make.value
+            },
+            taker: form.taker || "0x0000000000000000000000000000000000000000",
+            takeAsset: {
+              assetType: {
+                tp: encodedTakeType.type,
+                data: encodedTakeType.data
+              },
+              amount: form.take.value
+            },
+            start: form.start || "0",
+            end: form.end || "0",
+            data: encodedData.data,
+            dataType: encodedData.type,
+            salt: form.salt
+          }];
+      }
+    });
+  });
+}
+
+function createTestOrder(maker) {
   return {
     maker: maker,
-    makeAsset: {
-      assetType: {
-        tp: make.type,
-        data: make.data
+    make: {
+      "type": {
+        "@type": "ERC721",
+        "token": "0x509fd4cdaa29be7b1fad251d8ea0fca2ca91eb60",
+        "tokenId": "0x0000000000000000000000000000000000000000000000000000000000000013"
       },
-      amount: "1"
+      "value": "1"
     },
-    taker: taker,
-    takeAsset: {
-      assetType: {
-        tp: take.type,
-        data: take.data
+    take: {
+      "type": {
+        "@type": "ETH"
       },
-      amount: "10000000000000000"
+      "value": "10000000000000000"
     },
-    start: "0",
-    end: "0",
-    data: data.data,
-    dataType: data.type,
+    data: {
+      "@type": "V1",
+      "beneficiary": "0x0000000000000000000000000000000000000000",
+      "originFees": []
+    },
     salt: "0x0000000000000000000000000000000000000000000000000000000000000001"
   };
 }
@@ -91779,76 +91847,69 @@ function putOrder(order) {
   });
 }
 
-function testSign() {
-  return __awaiter(this, void 0, void 0, function () {
-    var taker, maker, makeForm, make, takeForm, take, dataForm, data, order, signature;
+function signOrderForm(form) {
+  return __awaiter(this, void 0, Promise, function () {
+    var order, signature;
     return __generator(this, function (_a) {
       switch (_a.label) {
         case 0:
-          taker = "0x0000000000000000000000000000000000000000";
+          return [4
+          /*yield*/
+          , prepareOrderMessage(form)];
+
+        case 1:
+          order = _a.sent();
+          return [4
+          /*yield*/
+          , signOrderMessage(web3, order, order.maker, 4, "0x43162023C187662684abAF0b211dCCB96fa4eD8a")];
+
+        case 2:
+          signature = _a.sent();
+          return [2
+          /*return*/
+          , __assign(__assign({}, form), {
+            signature: signature
+          })];
+      }
+    });
+  });
+}
+
+function testSign() {
+  return __awaiter(this, void 0, void 0, function () {
+    var maker;
+    return __generator(this, function (_a) {
+      switch (_a.label) {
+        case 0:
           return [4
           /*yield*/
           , web3.eth.getAccounts()];
 
         case 1:
           maker = _a.sent()[0];
-          makeForm = {
-            "@type": "ERC721",
-            token: "0x25646B08D9796CedA5FB8CE0105a51820740C049",
-            tokenId: "53721905486644660545161939638297855196812841812707644157952069735379309525090"
-          };
-          return [4
-          /*yield*/
-          , getEncodedAssetData(makeForm)];
-
-        case 2:
-          make = _a.sent();
-          takeForm = {
-            "@type": "ETH"
-          };
-          return [4
-          /*yield*/
-          , getEncodedAssetData(takeForm)];
-
-        case 3:
-          take = _a.sent();
-          dataForm = {
-            "@type": "V1",
-            beneficiary: "0x0000000000000000000000000000000000000000",
-            originFees: []
-          };
-          return [4
-          /*yield*/
-          , getEncoderData(dataForm)];
-
-        case 4:
-          data = _a.sent();
-          order = createTestOrder(take, make, data, maker, taker);
-          return [4
-          /*yield*/
-          , signOrderMessage(web3, order, maker, 4, "0x43162023C187662684abAF0b211dCCB96fa4eD8a")];
-
-        case 5:
-          signature = _a.sent();
           return [2
           /*return*/
-          , putOrder({
-            maker: maker,
-            make: {
-              type: makeForm,
-              value: order.makeAsset.amount
-            },
-            take: {
-              type: takeForm,
-              value: order.takeAsset.amount
-            },
-            taker: taker,
-            start: order.start,
-            end: order.end,
-            salt: order.salt,
-            data: dataForm,
-            signature: signature
-          })];
+          , signAndPut(createTestOrder(maker))];
+      }
+    });
+  });
+}
+
+function signAndPut(notSignedOrderForm) {
+  return __awaiter(this, void 0, void 0, function () {
+    var signed;
+    return __generator(this, function (_a) {
+      switch (_a.label) {
+        case 0:
+          return [4
+          /*yield*/
+          , signOrderForm(notSignedOrderForm)];
+
+        case 1:
+          signed = _a.sent();
+          return [2
+          /*return*/
+          , putOrder(signed)];
       }
     });
   });
@@ -91894,7 +91955,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62101" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "39021" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -50,20 +50,22 @@ type FeeForm = {
 	account: string
 	value: string
 }
-export type OrderDataForm = {
-	"@type": string,
+
+export type OrderDataV1Form = {
+	"@type": "V1",
 	beneficiary?: string,
 	originFees: FeeForm[]
 }
+export type OrderDataForm = OrderDataV1Form
 
 export type OrderForm = {
 	maker: string,
 	make: AssetForm,
-	taker: string,
+	taker?: string,
 	take: AssetForm,
 	salt: string,
-	start: string,
-	end: string,
+	start?: string,
+	end?: string,
 	data: OrderDataForm,
 	signature: string
 }

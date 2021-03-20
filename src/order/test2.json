@@ -1,0 +1,30 @@
+{
+  "maker": "0xfb571f9da71d1ac33e069571bf5c67fadcff18e4",
+  "make": {
+    "type": {
+      "@type": "ERC721",
+      "token": "0x509fd4cdaa29be7b1fad251d8ea0fca2ca91eb60",
+      "tokenId": "0x0000000000000000000000000000000000000000000000000000000000000013"
+    },
+    "value": 1
+  },
+  "take": {
+    "type": {
+      "@type": "ETH"
+    },
+    "value": 10000000000000000
+  },
+  "fill": 0,
+  "makeStock": 1,
+  "cancelled": false,
+  "salt": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "data": {
+    "@type": "V1",
+    "beneficiary": "0x0000000000000000000000000000000000000000",
+    "originFees": []
+  },
+  "signature": "0xb9062356b6311d3a6e520a17e8859fcc70a8aef90904efaa08d0bebc762ef02f3ea6df90a5ed98e4683493bda2b32244d6c3f8b31cd3cab139827d6fbd51b6b21b",
+  "createdAt": "2021-03-18T14:34:42.837+00:00",
+  "lastUpdateAt": "2021-03-18T14:34:42.837+00:00",
+  "hash": "0x438f5a4f9809285c722cfe5991f89b603d2d605a4e739831b81d0f622bdf1f37"
+}
