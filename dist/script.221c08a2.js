@@ -89829,16 +89829,35 @@ exports.createTypeData = createTypeData;
 
 function signTypedData(web3, from, data) {
   var msgData = JSON.stringify(data);
-  return web3.currentProvider.sendAsync({
-    method: "eth_signTypedData_v3",
-    params: [from, msgData],
-    from: from
-  }, function (err, result) {
-    if (err) {
-      return console.dir(err);
-    } else {
-      console.log("1231", result);
+  return new Promise(function (resolve, reject) {
+    function cb(err, result) {
+      if (err) {
+        return reject(err);
+      }
+
+      if (result.error) {
+        return reject(result.error);
+      }
+
+      var sig = result.result;
+      var sig0 = sig.substring(2);
+      var r = "0x" + sig0.substring(0, 64);
+      var s = "0x" + sig0.substring(64, 128);
+      var v = parseInt(sig0.substring(128, 130), 16);
+      resolve({
+        data: data,
+        sig: sig,
+        v: v,
+        r: r,
+        s: s
+      });
     }
+
+    return web3.currentProvider.sendAsync({
+      method: "eth_signTypedData_v3",
+      params: [from, msgData],
+      from: from
+    }, cb);
   });
 }
 
@@ -90124,12 +90143,11 @@ function testSign() {
   });
 }
 
-testSign().then(console.log).catch(console.log);
 (_a = document.getElementById("connect")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", function (e) {
   e.preventDefault();
   provider.enable();
 });
-(_b = document.getElementById("dotests")) === null || _b === void 0 ? void 0 : _b.addEventListener("click", function (e) {
+(_b = document.getElementById("sign")) === null || _b === void 0 ? void 0 : _b.addEventListener("click", function (e) {
   e.preventDefault();
   testSign();
 });
@@ -90161,7 +90179,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60540" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62101" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

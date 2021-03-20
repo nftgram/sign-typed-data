@@ -82,14 +82,12 @@ async function testSign() {
   );
 }
 
-testSign().then(console.log).catch(console.log);
-
 document.getElementById("connect")?.addEventListener("click", (e) => {
   e.preventDefault()
   provider.enable();
 })
 
-document.getElementById("dotests")?.addEventListener("click", (e) => {
+document.getElementById("sign")?.addEventListener("click", (e) => {
   e.preventDefault()
   testSign()
 })
