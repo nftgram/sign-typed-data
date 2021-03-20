@@ -1,3 +1,8 @@
+type FeeForm = {
+	account: string
+	value: string
+}
+
 export type OrderAssetType = {
 	tp: string
 	data: string
@@ -31,9 +36,26 @@ export type AssetTypeForm = {
   token: string
   tokenId: string
 } | {
-	"type": "ERC1155"
+	"@type": "ERC1155"
 	token: string
 	tokenId: string
+} | {
+	"@type": "ERC721_LAZY",
+	token: string,
+	tokenId: string,
+	uri: string,
+	creators: string[],
+	royalties: FeeForm[],
+	signatures: string[]
+} | {
+	"@type": "ERC1155_LAZY",
+	token: string,
+	tokenId: string,
+	uri: string,
+	supply: string,
+	creators: string[],
+	royalties: FeeForm[],
+	signatures: string[]
 }
 
 export type AssetEncodedTypeForm = {
@@ -43,11 +65,6 @@ export type AssetEncodedTypeForm = {
 
 export type AssetForm = {
 	type: AssetTypeForm
-	value: string
-}
-
-type FeeForm = {
-	account: string
 	value: string
 }
 
