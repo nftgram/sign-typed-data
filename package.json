@@ -4,10 +4,7 @@
 	"main": "index.js",
 	"license": "MIT",
 	"scripts": {
-		"build": "tsc -p .",
-		"go": "node ./lib/index.js",
-		"build-run": "yarn run build && yarn run go",
-		"browser": "parcel ./src/order/index.html --open"
+		"start": "parcel ./src/index.html --open"
 	},
 	"browserslist": [
 		"last 1 Chrome versions"
