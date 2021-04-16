@@ -57,11 +57,11 @@ export function signTypedData(web3: any, from: string, data: any) {
       const v = parseInt(sig0.substring(128, 130), 16);
       resolve({ data, sig, v, r, s });
     }
-  
+
   return web3.currentProvider.sendAsync({
-      method: "eth_signTypedData_v3",
+      method: "eth_signTypedData_v4",
       params: [from, msgData],
-      from 
+      from
     }, cb);
   })
 }

@@ -1,4 +1,4 @@
-type FeeForm = {
+export type Part = {
 	account: string
 	value: string
 }
@@ -44,8 +44,8 @@ export type AssetTypeForm = {
 	token: string,
 	tokenId: string,
 	uri: string,
-	creators: string[],
-	royalties: FeeForm[],
+	creators: Part[],
+	royalties: Part[],
 	signatures: string[]
 } | {
 	"@type": "ERC1155_LAZY",
@@ -53,8 +53,8 @@ export type AssetTypeForm = {
 	tokenId: string,
 	uri: string,
 	supply: string,
-	creators: string[],
-	royalties: FeeForm[],
+	creators: Part[],
+	royalties: Part[],
 	signatures: string[]
 }
 
@@ -71,7 +71,7 @@ export type AssetForm = {
 export type OrderDataV1Form = {
 	"@type": "V1",
 	beneficiary?: string,
-	originFees: FeeForm[]
+	originFees: Part[]
 }
 export type OrderDataForm = OrderDataV1Form
 

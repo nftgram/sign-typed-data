@@ -3,28 +3,29 @@ import 'regenerator-runtime/runtime'
 import axios from "axios"
 import { createTypeData, signTypedData } from "./sign"
 import { AssetEncodedTypeForm, AssetTypeForm, Order, OrderDataForm, OrderForm } from "./domain"
+import { testSignAndCreateLazyMint } from "./lazy-mint/script"
 
 const orderTypes = {
   AssetType: [
-    { name: "tp", type: "bytes4" },
-    { name: "data", type: "bytes" }
+    { name: 'assetClass', type: 'bytes4' },
+    { name: 'data', type: 'bytes' },
   ],
   Asset: [
-    { name: "assetType", type: "AssetType" },
-    { name: "amount", type: "uint256" }
+    { name: 'assetType', type: 'AssetType' },
+    { name: 'value', type: 'uint256' },
   ],
   Order: [
-    { name: "maker", type: "address" },
-    { name: "makeAsset", type: "Asset" },
-    { name: "taker", type: "address" },
-    { name: "takeAsset", type: "Asset" },
-    { name: "salt", type: "uint256" },
-    { name: "start", type: "uint256" },
-    { name: "end", type: "uint256" },
-    { name: "dataType", type: "bytes4" },
-    { name: "data", type: "bytes" }
-  ]
-};
+    { name: 'maker', type: 'address' },
+    { name: 'makeAsset', type: 'Asset' },
+    { name: 'taker', type: 'address' },
+    { name: 'takeAsset', type: 'Asset' },
+    { name: 'salt', type: 'uint256' },
+    { name: 'start', type: 'uint256' },
+    { name: 'end', type: 'uint256' },
+    { name: 'dataType', type: 'bytes4' },
+    { name: 'data', type: 'bytes' },
+  ],
+}
 
 async function signOrderMessage(
   web3: Web3,
@@ -48,9 +49,9 @@ async function signOrderMessage(
 }
 
 const provider = (window as any).ethereum;
-const web3 = new Web3(provider);
+export const web3 = new Web3(provider);
 
-const client = axios.create({
+export const client = axios.create({
 	baseURL: "https://api-staging.rarible.com"
 })
 
@@ -149,11 +150,13 @@ async function signAndPut(notSignedOrderForm: Omit<OrderForm, "signature">) {
 }
 
 document.getElementById("connect")?.addEventListener("click", (e) => {
+  console.log("clicked connect")
   e.preventDefault()
   provider.enable();
 })
 
 document.getElementById("sign")?.addEventListener("click", (e) => {
+  console.log("clicked sign")
   e.preventDefault()
-  testSign().then(x => console.log("SENT", x)).catch(err => console.dir("ERROR", err))
+  testSignAndCreateLazyMint().then(x => console.log("SENT", x)).catch(err => console.dir("ERROR", err))
 })
