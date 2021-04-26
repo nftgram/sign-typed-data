@@ -2,7 +2,7 @@ import { Part } from "../domain"
 
 type ERC721LazyMint = {
 	"@type": "ERC721",
-	token: string,
+	contract: string,
 	tokenId: string,
 	uri: string,
 	creators: Part[],
@@ -11,7 +11,7 @@ type ERC721LazyMint = {
 }
 type ERC1155LazyMint = {
 	"@type": "ERC1155",
-	token: string,
+	contract: string,
 	tokenId: string,
 	uri: string,
 	creators: Part[],

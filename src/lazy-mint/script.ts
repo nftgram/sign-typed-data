@@ -63,7 +63,7 @@ export async function createTestLazyMint(): Promise<Omit<LazyMint, "signatures">
 	console.log("generated tokenId", tokenId)
 	return {
 		"@type": "ERC721",
-		token: getAddress("ERC721"),
+		contract: getAddress("ERC721"),
 		tokenId: tokenId,
 		uri: "/ipfs/QmWLsBu6nS4ovaHbGAXprD1qEssJu4r5taQfB74sCG51tp",
 		creators: [{ account: creator, value: "10000" }],
