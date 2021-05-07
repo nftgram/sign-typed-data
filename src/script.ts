@@ -20,7 +20,7 @@ const priceInput: HTMLInputElement = document.getElementById("price")
 
 document.getElementById("connect")?.addEventListener("click", (e) => {
 	e.preventDefault()
-	provider.enable()
+	// provider.enable()
 })
 
 document.getElementById("createLazyMint")?.addEventListener("click", (e) => {
@@ -33,12 +33,12 @@ document.getElementById("createLazyMint")?.addEventListener("click", (e) => {
 			// @ts-ignore
 			tokenIdInput.value = x.tokenId
 		})
-		.catch(err => console.dir("ERROR", err))
+		.catch(err => console.error("ERROR", err))
 })
 
 document.getElementById("createOrder")?.addEventListener("click", (e) => {
 	e.preventDefault()
 	createAndSignOrder(contractInput.value, tokenIdInput.value, priceInput.value)
 		.then(x => console.log("SENT", x))
-		.catch(err => console.dir("ERROR", err))
+		.catch(err => console.error("ERROR", err))
 })

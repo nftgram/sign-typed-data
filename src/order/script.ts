@@ -1,7 +1,6 @@
-import Web3 from "web3"
 import { Order, OrderForm } from "./domain"
-import { createTypeData, signTypedData } from "../sign"
-import { client, web3 } from "../script"
+import { createTypeData, getAccount, signTypedData } from "../sign"
+import { client } from "../script"
 
 const orderTypes = {
 	AssetType: [
@@ -26,7 +25,6 @@ const orderTypes = {
 }
 
 async function signOrderMessage(
-	web3: Web3,
 	order: Order,
 	account: string,
 	chainId: number,
@@ -44,7 +42,7 @@ async function signOrderMessage(
 		orderTypes,
 	)
 	console.log("signing", data)
-	return (await signTypedData(web3, account, data)).sig
+	return signTypedData(account, data)
 }
 
 async function prepareOrderMessage(form: Omit<OrderForm, "signature">): Promise<Order> {
@@ -91,7 +89,6 @@ async function putOrder(order: OrderForm) {
 async function signOrderForm(form: Omit<OrderForm, "signature">): Promise<OrderForm> {
 	const order = await prepareOrderMessage(form)
 	const signature = await signOrderMessage(
-		web3,
 		order,
 		order.maker,
 		4,
@@ -101,7 +98,7 @@ async function signOrderForm(form: Omit<OrderForm, "signature">): Promise<OrderF
 }
 
 export async function createAndSignOrder(contract: string, tokenId: string, price: string) {
-	const [maker] = await web3.eth.getAccounts()
+	const maker = await getAccount()
 	return signAndPut(createOrder(maker, contract, tokenId, price))
 }
 

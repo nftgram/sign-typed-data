@@ -1,7 +1,6 @@
-import Web3 from "web3"
-import { createTypeData, signTypedData } from "../sign"
+import { createTypeData, getAccount, signTypedData } from "../sign"
 import { ERC1155Types, ERC721Types, LazyMint } from "./domain"
-import { client, web3 } from "../script"
+import { client } from "../script"
 
 async function generateTokenId(type: "ERC721" | "ERC1155", minter: string): Promise<string> {
 	console.log("generating tokenId for", getAddress(type), minter)
@@ -21,7 +20,6 @@ export async function signAndPutLazyMint(form: Omit<LazyMint, "signatures">): Pr
 
 async function signLazyMint(form: Omit<LazyMint, "signatures">): Promise<LazyMint> {
 	const signature = await signLazyMintMessage(
-		web3,
 		form,
 		form.creators[0].account,
 		4,
@@ -35,7 +33,6 @@ function getAddress(type: "ERC721" | "ERC1155"): string {
 }
 
 async function signLazyMintMessage(
-	web3: Web3,
 	form: Omit<LazyMint, "signatures">,
 	account: string,
 	chainId: number,
@@ -54,11 +51,12 @@ async function signLazyMintMessage(
 		form["@type"] === "ERC721" ? ERC721Types : ERC1155Types
 	);
 	console.log("signing", data)
-	return (await signTypedData(web3, account, data)).sig;
+	return signTypedData(account, data);
 }
 
 export async function createTestLazyMint(): Promise<Omit<LazyMint, "signatures">> {
-	const [creator] = await web3.eth.getAccounts()
+	const creator = await getAccount()
+	console.log("creator is", creator)
 	const tokenId = await generateTokenId("ERC721", creator)
 	console.log("generated tokenId", tokenId)
 	return {
