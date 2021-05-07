@@ -1,16 +1,13 @@
-export type Part = {
-	account: string
-	value: string
-}
+import { Part } from "../domain"
 
 export type OrderAssetType = {
-	tp: string
+	assetClass: string
 	data: string
 }
 
 export type OrderAsset = {
 	assetType: OrderAssetType
-	amount: string
+	value: string
 }
 
 export type Order = {
