@@ -7,8 +7,19 @@
 	<title>Document</title>
 </head>
 <body>
-	<button id="connect">Connect wallet</button>
-	<button id="sign">Create signature and create order</button>
+	<div>
+		<button id="connect">Connect wallet</button>
+	</div>
+	<div>
+		<button id="createLazyMint">Create lazy-minted NFT</button>
+	</div>
+	<div>
+		<input id="contract" type="text" placeholder="contract address"/>
+		<input id="tokenId" type="text" placeholder="tokenId"/>
+		<input id="price" type="text" placeholder="price(in wei)" value="10000000000000000"/>
+		<button id="createOrder">Create order</button> (fill contract and tokenId)
+	</div>
+
 	<script src="./script.ts"></script>
 </body>
 </html>

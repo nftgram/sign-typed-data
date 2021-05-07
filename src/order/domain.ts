@@ -26,56 +26,35 @@ export type Order = {
 }
 
 export type AssetTypeForm = {
-  "@type": "ETH"
+  "assetClass": "ETH"
 } | {
-  "@type": "ERC721"
-  token: string
+  "assetClass": "ERC721"
+  contract: string
   tokenId: string
 } | {
-  "@type": "ERC20"
-  token: string
+  "assetClass": "ERC20"
+	contract: string
   tokenId: string
 } | {
-	"@type": "ERC1155"
-	token: string
+	"assetClass": "ERC1155"
+	contract: string
 	tokenId: string
-} | {
-	"@type": "ERC721_LAZY",
-	token: string,
-	tokenId: string,
-	uri: string,
-	creators: Part[],
-	royalties: Part[],
-	signatures: string[]
-} | {
-	"@type": "ERC1155_LAZY",
-	token: string,
-	tokenId: string,
-	uri: string,
-	supply: string,
-	creators: Part[],
-	royalties: Part[],
-	signatures: string[]
-}
-
-export type AssetEncodedTypeForm = {
-	type: string
-	data: string
 }
 
 export type AssetForm = {
-	type: AssetTypeForm
+	assetType: AssetTypeForm
 	value: string
 }
 
 export type OrderDataV1Form = {
-	"@type": "V1",
-	beneficiary?: string,
+	dataType: "RARIBLE_V2_DATA_V1",
+	payouts: Part[],
 	originFees: Part[]
 }
 export type OrderDataForm = OrderDataV1Form
 
 export type OrderForm = {
+	type: "RARIBLE_V1" | "RARIBLE_V2"
 	maker: string,
 	make: AssetForm,
 	taker?: string,

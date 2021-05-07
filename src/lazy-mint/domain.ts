@@ -1,4 +1,4 @@
-import { Part } from "../domain"
+import { Part } from "../order/domain"
 
 type ERC721LazyMint = {
 	"@type": "ERC721",
