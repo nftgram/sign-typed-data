@@ -20,7 +20,7 @@ const priceInput: HTMLInputElement = document.getElementById("price")
 
 document.getElementById("connect")?.addEventListener("click", (e) => {
 	e.preventDefault()
-	// provider.enable()
+	provider.enable()
 })
 
 document.getElementById("createLazyMint")?.addEventListener("click", (e) => {

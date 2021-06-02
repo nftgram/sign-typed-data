@@ -1,25 +1,28 @@
 import { Part } from "../domain"
 
-export type OrderAssetType = {
-	assetClass: string
-	data: string
+export type EncodedOrder = {
+	transferProxyAddress?: string
+	signMessage: SignMessage
 }
 
-export type OrderAsset = {
-	assetType: OrderAssetType
-	value: string
+export type SignMessage = EIP712SignMessage | TextSignMessage
+
+export type EIP712SignMessage = {
+	domain: EIP712Domain
+	struct: any
+	structType: string
+	types: any
 }
 
-export type Order = {
-	maker: string
-	makeAsset: OrderAsset
-	taker: string
-	takeAsset: OrderAsset
-	salt: string
-	start: string
-	end: string
-	data: string
-	dataType: string
+export type EIP712Domain = {
+	name: string
+	version: string
+	chainId: number
+	verifyingContract: string
+}
+
+export type TextSignMessage = {
+	message: string
 }
 
 export type AssetTypeForm = {

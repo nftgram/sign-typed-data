@@ -1,52 +1,26 @@
-import { Order, OrderForm } from "./domain"
+import { EIP712Domain, EIP712SignMessage, EncodedOrder, OrderForm } from "./domain"
 import { createTypeData, getAccount, signTypedData } from "../sign"
 import { client } from "../script"
 
-const orderTypes = {
-	AssetType: [
-		{ name: 'assetClass', type: 'bytes4' },
-		{ name: 'data', type: 'bytes' },
-	],
-	Asset: [
-		{ name: 'assetType', type: 'AssetType' },
-		{ name: 'value', type: 'uint256' },
-	],
-	Order: [
-		{ name: 'maker', type: 'address' },
-		{ name: 'makeAsset', type: 'Asset' },
-		{ name: 'taker', type: 'address' },
-		{ name: 'takeAsset', type: 'Asset' },
-		{ name: 'salt', type: 'uint256' },
-		{ name: 'start', type: 'uint256' },
-		{ name: 'end', type: 'uint256' },
-		{ name: 'dataType', type: 'bytes4' },
-		{ name: 'data', type: 'bytes' },
-	],
-}
-
 async function signOrderMessage(
-	order: Order,
-	account: string,
-	chainId: number,
-	verifyingContract: string,
+	struct: any,
+	types: any,
+	structType: string,
+	domain: EIP712Domain,
+	account: string
 ) {
 	const data = createTypeData(
-		{
-			name: "Exchange",
-			version: "2",
-			chainId,
-			verifyingContract,
-		},
-		"Order",
-		order,
-		orderTypes,
+		domain,
+		structType,
+		struct,
+		types,
 	)
 	console.log("signing", data)
 	return signTypedData(account, data)
 }
 
-async function prepareOrderMessage(form: Omit<OrderForm, "signature">): Promise<Order> {
-	const res = await client.post<Order>("/protocol/v0.1/ethereum/order/encoder/order", form)
+async function prepareOrderMessage(form: Omit<OrderForm, "signature">): Promise<EncodedOrder> {
+	const res = await client.post<EncodedOrder>("/protocol/v0.1/ethereum/order/encoder/order", form)
 	return res.data
 }
 
@@ -87,12 +61,10 @@ async function putOrder(order: OrderForm) {
 }
 
 async function signOrderForm(form: Omit<OrderForm, "signature">): Promise<OrderForm> {
-	const order = await prepareOrderMessage(form)
+	const encoded = await prepareOrderMessage(form)
+	const msg = encoded.signMessage as EIP712SignMessage
 	const signature = await signOrderMessage(
-		order,
-		order.maker,
-		4,
-		"0x1e1B6E13F0eB4C570628589e3c088BC92aD4dB45",
+		msg.struct, msg.types, msg.structType, msg.domain, form.maker
 	)
 	return { ...form, signature }
 }
