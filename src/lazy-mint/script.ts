@@ -1,5 +1,5 @@
 import { createTypeData, getAccount, signTypedData } from "../sign"
-import { ERC1155Types, ERC721Types, LazyMint } from "./domain"
+import { ERC1155Types, ERC1155LazyMint, ERC721Types, LazyMint } from "./domain"
 import { client } from "../script"
 
 async function generateTokenId(type: "ERC721" | "ERC1155", minter: string): Promise<string> {
@@ -54,19 +54,21 @@ async function signLazyMintMessage(
 	return signTypedData(account, data);
 }
 
-export async function createTestLazyMint(): Promise<Omit<LazyMint, "signatures">> {
+export async function createTestLazyMint(): Promise<Omit<ERC1155LazyMint, "signatures">> {
 	const creator = await getAccount()
 	console.log("creator is", creator)
-	const tokenId = await generateTokenId("ERC721", creator)
+	const tokenId = await generateTokenId("ERC1155", creator)
 	console.log("generated tokenId", tokenId)
-	return {
-		"@type": "ERC721",
-		contract: getAddress("ERC721"),
+	const s: Omit<ERC1155LazyMint, "signatures"> =  {
+		"@type": "ERC1155",
+		contract: getAddress("ERC1155"),
 		tokenId: tokenId,
 		uri: "/ipfs/QmWLsBu6nS4ovaHbGAXprD1qEssJu4r5taQfB74sCG51tp",
 		creators: [{ account: creator, value: "10000" }],
-		royalties: []
-	}
+		royalties: [],
+		supply: "3"
+	} 
+	return s
 }
 
 export async function testSignAndCreateLazyMint(): Promise<any> {
