@@ -1,6 +1,7 @@
 import Web3 from "web3"
 import 'regenerator-runtime/runtime'
 import axios from "axios"
+import { inspect } from 'util'
 import { testSignAndCreateLazyMint } from "./lazy-mint/script"
 import { createAndSignOrder } from "./order/script"
 
@@ -19,7 +20,8 @@ const tokenIdInput: HTMLInputElement = document.getElementById("tokenId")
 const priceInput: HTMLInputElement = document.getElementById("price")
 
 provider.enable().then(
-	testSignAndCreateLazyMint()
+	// @ts-ignore
+	x => testSignAndCreateLazyMint()
 	.then(x => {
 		console.log("SENT", x)
 		// @ts-ignore
@@ -27,5 +29,5 @@ provider.enable().then(
 			.then(x => console.log("SENT", x))
 			.catch(err => console.error("ERROR", err))
 	})
-	.catch(err => console.error("ERROR", err))
+	.catch(err => console.error("ERROR", inspect(err)))
 )
