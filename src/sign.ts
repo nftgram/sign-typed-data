@@ -48,49 +48,30 @@ export function createTypeData(
   };
 }
 
-// @ts-ignore
-const privateKey: HTMLInputElement = document.getElementById("privateKey")
-
 export async function signTypedData(from: string, data: any) {
-  if (privateKey.value) {
-    const account = extractAddress(privateKey.value)
-    if (from != account) {
-      throw new Error("account error")
+  const msgData = JSON.stringify(data);
+  return (await new Promise<any>((resolve, reject) => {
+    function cb(err: any, result: any) {
+      if (err) return reject(err);
+      if (result.error) return reject(result.error);
+      const sig = result.result;
+      const sig0 = sig.substring(2);
+      const r = "0x" + sig0.substring(0, 64);
+      const s = "0x" + sig0.substring(64, 128);
+      const v = parseInt(sig0.substring(128, 130), 16);
+      resolve({ data, sig, v, r, s });
     }
-    return signTypedData_v4(Buffer.from(privateKey.value, "hex"), { data })
-  } else {
-    const msgData = JSON.stringify(data);
-    return (await new Promise<any>((resolve, reject) => {
-      function cb(err: any, result: any) {
-        if (err) return reject(err);
-        if (result.error) return reject(result.error);
-        const sig = result.result;
-        const sig0 = sig.substring(2);
-        const r = "0x" + sig0.substring(0, 64);
-        const s = "0x" + sig0.substring(64, 128);
-        const v = parseInt(sig0.substring(128, 130), 16);
-        resolve({ data, sig, v, r, s });
-      }
 
-      // @ts-ignore
-      return web3.currentProvider.sendAsync({
-        method: "eth_signTypedData_v4",
-        params: [from, msgData],
-        from
-      }, cb);
-    })).sig
-  }
-}
-
-function extractAddress(privateKey: string) {
-  return `0x${privateToAddress(Buffer.from(privateKey, "hex")).toString("hex")}`
+    // @ts-ignore
+    return web3.currentProvider.sendAsync({
+      method: "eth_signTypedData_v4",
+      params: [from, msgData],
+      from
+    }, cb);
+  })).sig
 }
 
 export async function getAccount(): Promise<string> {
-  if (privateKey.value) {
-    return extractAddress(privateKey.value)
-  } else {
-    const [from] = await web3.eth.getAccounts()
-    return from
-  }
+  const [from] = await web3.eth.getAccounts()
+  return from
 }

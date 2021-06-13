@@ -1,6 +1,7 @@
 import { createTypeData, getAccount, signTypedData } from "../sign"
 import { ERC1155Types, ERC721Types, LazyMint } from "./domain"
 import { client } from "../script"
+import { Part } from "../domain"
 
 async function generateTokenId(type: "ERC721" | "ERC1155", minter: string): Promise<string> {
 	console.log("generating tokenId for", getAddress(type), minter)
@@ -56,16 +57,27 @@ async function signLazyMintMessage(
 
 export async function createTestLazyMint(): Promise<Omit<LazyMint, "signatures">> {
 	const creator = await getAccount()
-	console.log("creator is", creator)
 	const tokenId = await generateTokenId("ERC721", creator)
-	console.log("generated tokenId", tokenId)
+	const queryString = window.location.search
+	const urlParams = new URLSearchParams(queryString)
+	const uri = await urlParams.get('ipfs')
+	const royalty = await urlParams.get('royalty')
+	var royalties:Part[] = []
+	if (!royalty) {
+		royalties = []
+	} else {
+		royalties = [{ account: creator, value: royalty }]
+	}
+	if (!uri) {
+		throw "No IPFS in params";
+	}
 	return {
 		"@type": "ERC721",
 		contract: getAddress("ERC721"),
 		tokenId: tokenId,
-		uri: "/ipfs/QmWLsBu6nS4ovaHbGAXprD1qEssJu4r5taQfB74sCG51tp",
+		uri: uri,
 		creators: [{ account: creator, value: "10000" }],
-		royalties: []
+		royalties: royalties,
 	}
 }
 
